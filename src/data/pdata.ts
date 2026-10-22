@@ -21,7 +21,7 @@ export const profile: StudentProfile = {
     facebook: 'https://www.facebook.com/akosijayhan',
     instagram: 'https://www.instagram.com/jayhahahan/',
     location: 'Tuguegarao City, Cagayan, Philippines',
-    avatarUrl: 'coe.jpg',
+    avatarUrl: 'img_4.png',
 }
 
 

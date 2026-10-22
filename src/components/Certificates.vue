@@ -11,27 +11,27 @@ interface Certificate {
 const certificates: Certificate[] = [
   {
     number: '01',
-    title: 'Regional ITE Summit',
-    issuer: 'St. Paul University of the Philippines',
-    image: './csc.jpg',
+    title: 'Any amount will do',
+    issuer: '',
+    image: './gcash.jpg',
   },
   {
     number: '02',
-    title: 'Civil Service Eligible',
-    issuer: 'Civil Service Commission',
-    image: './Dayag.png',
+    title: 'Pang parlay lang po',
+    issuer: '',
+    image: './gcash.jpg',
   },
   {
     number: '03',
-    title: 'Safety Officer 1 (SO1)',
-    issuer: 'DOLE Accredited',
-    image: './SO1.png',
+    title: 'Pang ft lang po',
+    issuer: '',
+    image: './gcash.jpg',
   },
   {
     number: '04',
-    title: 'International Conference',
-    issuer: 'Cagayan State University',
-    image: './sem.png',
+    title: 'Pang gatas lang po ng anak ko',
+    issuer: '',
+    image: './gcash.jpg',
   },
 ]
 
@@ -89,9 +89,9 @@ onUnmounted(() => {
 
 <template>
   <section id="certificates" class="section certificates-section">
-    <p class="eyebrow"> CERTIFICATES</p>
+    <p class="eyebrow"> Scan mo na yan pls!</p>
 
-    <h2> Certificates & Achievements<span> </span></h2>
+    <h2> Scan this for feedback<span> </span></h2>
 
     <div class="carousel-container">
       <!-- Previous Button -->
