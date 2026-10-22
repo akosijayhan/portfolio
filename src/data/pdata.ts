@@ -15,7 +15,7 @@ export const profile: StudentProfile = {
     title: 'Computer Engineering Student & Hardware/Software Developer',
     degree: 'Bachelor of Science in Computer Engineering',
     university: 'Cagayan State University – Carig Campus',
-    bio: ' I am Mapagmahal',
+    bio: ' Aspiring Computer Engineer exploring the intersection of software development and hardware design. Actively building foundations in full-stack web dev and microcontroller programming through practical, real-world application. Focused on continuous learning and turning technical concepts into working projects.',
     email: 'akosijayhan@gmail.com',
     github: 'https://github.com/akosijayhan',
     facebook: 'https://www.facebook.com/akosijayhan',
@@ -64,7 +64,7 @@ export const projects: Project[] = [
     },
     {
         id: 5,
-        title: 'Dinosaur Museum Management System',
+        title: 'Museum Management System',
         description:
             'A relational database and web-based system designed to manage dinosaur exhibits, track specimen activities, log visitor interactions, and streamline museum operations.',
         tags: [],
