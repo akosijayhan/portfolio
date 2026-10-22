@@ -13,26 +13,26 @@ const certificates: Certificate[] = [
     number: '01',
     title: 'Regional ITE Summit',
     issuer: 'St. Paul University of the Philippines',
-    image: '/Dayag.png',
+    image: new URL('../public/csc.png', import.meta.url).href,
   },
   {
     number: '02',
     title: 'Civil Service Eligible',
     issuer: 'Civil Service Commission',
-    image: '/csc.jpg',
+    image:  new URL('../public/Dayag.png', import.meta.url).href,
   },
   {
     number: '03',
     title: 'Safety Officer 1 (SO1)',
     issuer: 'DOLE Accredited',
-    image: '/SO1.png',
+    image:  new URL('../public/SO1.png', import.meta.url).href,
   },
   {
     number: '04',
     title: 'International Conference',
     issuer: 'Cagayan State University',
-    image: 'sem.png',
-  },
+    image: new URL('../public/sem.png', import.meta.url).href,
+  }
 ]
 
 const currentIndex = ref(0)
