@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { profile } from '../data/pdata'
 
 interface SocialLink {
@@ -11,7 +12,17 @@ interface SocialLink {
   hoverText: string
 }
 
+interface Node {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+}
+
 const safeProfile = profile ?? {}
+const canvasRef = ref<HTMLCanvasElement | null>(null)
+let animationFrameId: number
 
 const socialLinks: SocialLink[] = [
   {
@@ -55,78 +66,213 @@ const socialLinks: SocialLink[] = [
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+// Canvas Particle System
+let nodes: Node[] = []
+const NODE_COUNT = 30
+const CONNECT_DISTANCE = 130
+
+const initCanvas = () => {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const parent = canvas.parentElement
+  canvas.width = parent ? parent.offsetWidth : window.innerWidth
+  canvas.height = parent ? parent.offsetHeight : 900
+
+  nodes = Array.from({ length: NODE_COUNT }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: (Math.random() - 0.5) * 1.2,
+    radius: Math.random() * 2.5 + 1.5,
+  }))
+}
+
+const draw = () => {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  for (let i = 0; i < nodes.length; i++) {
+    const nodeA = nodes[i]
+    if (!nodeA) continue
+
+    for (let j = i + 1; j < nodes.length; j++) {
+      const nodeB = nodes[j]
+      if (!nodeB) continue
+
+      const dx = nodeA.x - nodeB.x
+      const dy = nodeA.y - nodeB.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+
+      if (dist < CONNECT_DISTANCE) {
+        const opacity = (1 - dist / CONNECT_DISTANCE) * 0.3
+        ctx.strokeStyle = `rgba(184, 255, 87, ${opacity})`
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.moveTo(nodeA.x, nodeA.y)
+        ctx.lineTo(nodeB.x, nodeB.y)
+        ctx.stroke()
+      }
+    }
+  }
+
+  nodes.forEach((node) => {
+    node.x += node.vx
+    node.y += node.vy
+
+    if (node.x < 0 || node.x > canvas.width) node.vx *= -1
+    if (node.y < 0 || node.y > canvas.height) node.vy *= -1
+
+    ctx.fillStyle = '#b8ff57'
+    ctx.shadowColor = '#b8ff57'
+    ctx.shadowBlur = 8
+    ctx.beginPath()
+    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.shadowBlur = 0
+  })
+
+  animationFrameId = requestAnimationFrame(draw)
+}
+
+const handleResize = () => {
+  initCanvas()
+}
+
+onMounted(() => {
+  initCanvas()
+  window.addEventListener('resize', handleResize)
+  draw()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  cancelAnimationFrame(animationFrameId)
+})
 </script>
 
 <template>
   <footer id="contact" class="contact">
-    <p class="eyebrow">05 — GET IN TOUCH</p>
+    <!-- Moving Circuit Canvas Background -->
+    <canvas ref="canvasRef" class="bg-canvas" />
 
-    <h2>
-      Have a project
-      <span>in mind?</span>
-    </h2>
+    <!-- Ambient Glow Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-    <a
-        :href="socialLinks[0]?.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="contact-link"
-    >
-      LET'S TALK
-      <div class="glow-arrow">
-        <span>↗</span>
-      </div>
-    </a>
+    <div class="content-container">
+      <p class="eyebrow">05 — GET IN TOUCH</p>
 
-    <!-- Social Accounts Grid Section -->
-    <div id="socials" class="socials-section">
-      <p class="eyebrow">DIGITAL CHANNELS</p>
+      <h2>
+        Have a project
+        <span>in mind?</span>
+      </h2>
 
-      <div class="social-links-grid">
+      <div class="cta-actions">
         <a
-            v-for="account in socialLinks"
-            :key="account.label"
-            :href="account.url"
+            :href="socialLinks[0]?.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="social-card"
-            :style="{ '--brandColor': account.color, '--shadowColor': account.glow }"
+            class="contact-link"
         >
-          <div class="card-glow-bg"></div>
-
-          <div class="card-content">
-            <div class="brand-info">
-              <svg
-                  class="brand-icon"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-              >
-                <path :d="account.icon" />
-              </svg>
-
-              <div class="text-stack">
-                <span class="label">{{ account.label }}</span>
-                <span class="username">{{ account.username }}</span>
-              </div>
-            </div>
-
-            <div class="arrow-container">
-              <span class="action-caption">{{ account.hoverText }}</span>
-              <span class="arrow-indicator">↗</span>
-            </div>
+          LET'S TALK
+          <div class="glow-arrow">
+            <span>↗</span>
           </div>
         </a>
-      </div>
-    </div>
 
-    <div class="footer-bottom">
-      <div class="credits">
-        <span>{{ (safeProfile.name || 'JAYHAN DAYAG').toUpperCase() }} © 2026</span>
-        <span class="version-badge">BUILD V2.1.4</span>
+        <!-- Button pointing directly to public/DayagJ_CV.pdf -->
+        <a
+            href="./DayagJ_CV.pdf"
+            download="DayagJ_CV.pdf"
+            class="cv-download-btn"
+        >
+          <svg class="download-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+          </svg>
+          DOWNLOAD CV (PDF)
+        </a>
       </div>
-      <button type="button" @click="scrollToTop" class="back-to-top">
-        BACK TO TOP <span class="caret">↑</span>
-      </button>
+
+      <!-- CV Preview Banner Card -->
+      <div class="cv-card-banner">
+        <div class="cv-banner-glow"></div>
+        <div class="cv-banner-content">
+          <div class="cv-info">
+            <div class="pdf-badge">PDF</div>
+            <div>
+              <h3>CURRICULUM VITAE</h3>
+              <p></p>
+            </div>
+          </div>
+          <a
+              href="./DayagJ_CV.pdf"
+              download="DayagJ_CV.pdf"
+              class="cv-action-link"
+          >
+            <span>GET COPY</span>
+            <span class="down-arrow">↓</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Social Links Grid -->
+      <div id="socials" class="socials-section">
+        <p class="eyebrow">DIGITAL CHANNELS</p>
+
+        <div class="social-links-grid">
+          <a
+              v-for="account in socialLinks"
+              :key="account.label"
+              :href="account.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-card"
+              :style="{ '--brandColor': account.color, '--shadowColor': account.glow }"
+          >
+            <div class="card-glow-bg"></div>
+
+            <div class="card-content">
+              <div class="brand-info">
+                <svg
+                    class="brand-icon"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                >
+                  <path :d="account.icon" />
+                </svg>
+
+                <div class="text-stack">
+                  <span class="label">{{ account.label }}</span>
+                  <span class="username">{{ account.username }}</span>
+                </div>
+              </div>
+
+              <div class="arrow-container">
+                <span class="action-caption">{{ account.hoverText }}</span>
+                <span class="arrow-indicator">↗</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="credits">
+          <span>{{ (safeProfile.name || 'JAYHAN B. DAYAG').toUpperCase() }} © 2026</span>
+          <span class="version-badge">BUILD V2.1.4</span>
+        </div>
+        <button type="button" @click="scrollToTop" class="back-to-top">
+          BACK TO TOP <span class="caret">↑</span>
+        </button>
+      </div>
     </div>
   </footer>
 </template>
@@ -136,20 +282,62 @@ const scrollToTop = () => {
   position: relative;
   overflow: hidden;
   padding: 140px 10% 40px;
-  background:
-      radial-gradient(
-          circle at 90% 15%,
-          rgba(184, 255, 87, 0.1) 0%,
-          transparent 45%
-      ),
-      radial-gradient(
-          circle at 10% 90%,
-          rgba(56, 189, 248, 0.08) 0%,
-          transparent 45%
-      ),
-      #07080b;
+  background: #07080b;
   color: #ffffff;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Background Canvas Layer */
+.bg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* Floating Glow Ambient Background Orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 1;
+  animation: floatOrb 12s infinite alternate ease-in-out;
+}
+
+.orb-1 {
+  width: 380px;
+  height: 380px;
+  top: 10%;
+  right: -5%;
+  background: rgba(184, 255, 87, 0.1);
+}
+
+.orb-2 {
+  width: 420px;
+  height: 420px;
+  bottom: 10%;
+  left: -5%;
+  background: rgba(56, 189, 248, 0.08);
+  animation-delay: -6s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50px, 60px) scale(1.15);
+  }
+}
+
+.content-container {
+  position: relative;
+  z-index: 2;
 }
 
 .eyebrow {
@@ -181,6 +369,13 @@ h2 span {
   text-transform: none;
   letter-spacing: -1px;
   padding-left: 10px;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
 }
 
 .contact-link {
@@ -231,8 +426,139 @@ h2 span {
   color: #b8ff57;
 }
 
+.cv-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border-radius: 50px;
+  background: rgba(184, 255, 87, 0.1);
+  border: 1px solid rgba(184, 255, 87, 0.4);
+  color: #b8ff57;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.cv-download-btn .download-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.cv-download-btn:hover {
+  background: #b8ff57;
+  color: #07080b;
+  box-shadow: 0 0 20px rgba(184, 255, 87, 0.4);
+  transform: translateY(-2px);
+}
+
+.cv-download-btn:hover .download-icon {
+  transform: translateY(2px);
+}
+
+.cv-card-banner {
+  position: relative;
+  margin-top: 60px;
+  padding: 24px 30px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cv-card-banner:hover {
+  border-color: rgba(184, 255, 87, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cv-banner-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 10% 50%, rgba(184, 255, 87, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.cv-banner-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.cv-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pdf-badge {
+  padding: 8px 12px;
+  background: rgba(234, 67, 53, 0.15);
+  border: 1px solid rgba(234, 67, 53, 0.3);
+  color: #ea4335;
+  font-weight: 800;
+  font-size: 12px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+}
+
+.cv-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #ffffff;
+}
+
+.cv-info p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.cv-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.cv-action-link:hover {
+  background: #b8ff57;
+  border-color: #b8ff57;
+  color: #07080b;
+}
+
+.cv-action-link .down-arrow {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.cv-action-link:hover .down-arrow {
+  transform: translateY(2px);
+}
+
 .socials-section {
-  margin-top: 130px;
+  margin-top: 100px;
   padding-top: 50px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -254,6 +580,7 @@ h2 span {
       rgba(255, 255, 255, 0.02) 0%,
       rgba(255, 255, 255, 0.005) 100%
   );
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   text-decoration: none;
@@ -450,6 +777,16 @@ h2 span {
 
   h2 {
     letter-spacing: -2px;
+  }
+
+  .cv-banner-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cv-action-link {
+    width: 100%;
+    justify-content: center;
   }
 
   .socials-section {

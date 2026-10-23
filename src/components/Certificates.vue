@@ -11,32 +11,117 @@ interface Certificate {
 const certificates: Certificate[] = [
   {
     number: '01',
-    title: 'Any amount will do',
-    issuer: '',
-    image: './gcash.jpg',
+    title: 'Regional ITE Summit',
+    issuer: 'Cagayan State University',
+    image: './Dayag.png',
   },
   {
     number: '02',
-    title: 'Pang parlay lang po',
-    issuer: '',
-    image: './gcash.jpg',
+    title: 'Civil Service Eligible',
+    issuer: 'Civil Service Commission',
+    image: './csc.jpg',
   },
   {
     number: '03',
-    title: 'Pang ft lang po',
-    issuer: '',
-    image: './gcash.jpg',
+    title: 'Safety Officer 1 (SO1)',
+    issuer: 'DOLE Accredited',
+    image: './SO1.png',
   },
   {
     number: '04',
-    title: 'Pang gatas lang po ng anak ko',
-    issuer: '',
-    image: './gcash.jpg',
+    title: 'International Conference',
+    issuer: 'Cagayan State University',
+    image: './sem.png',
   },
 ]
 
 const currentIndex = ref(0)
 const isModalOpen = ref(false)
+const canvasRef = ref<HTMLCanvasElement | null>(null)
+let animationFrameId: number
+
+interface Node {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+}
+
+// Canvas Particle System
+let nodes: Node[] = []
+const NODE_COUNT = 30
+const CONNECT_DISTANCE = 130
+
+const initCanvas = () => {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const parent = canvas.parentElement
+  canvas.width = parent ? parent.offsetWidth : window.innerWidth
+  canvas.height = parent ? parent.offsetHeight : 800
+
+  nodes = Array.from({ length: NODE_COUNT }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: (Math.random() - 0.5) * 1.2,
+    radius: Math.random() * 2.5 + 1.5,
+  }))
+}
+
+const draw = () => {
+  const canvas = canvasRef.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  for (let i = 0; i < nodes.length; i++) {
+    const nodeA = nodes[i]
+    if (!nodeA) continue
+
+    for (let j = i + 1; j < nodes.length; j++) {
+      const nodeB = nodes[j]
+      if (!nodeB) continue
+
+      const dx = nodeA.x - nodeB.x
+      const dy = nodeA.y - nodeB.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+
+      if (dist < CONNECT_DISTANCE) {
+        const opacity = (1 - dist / CONNECT_DISTANCE) * 0.3
+        ctx.strokeStyle = `rgba(184, 255, 87, ${opacity})`
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.moveTo(nodeA.x, nodeA.y)
+        ctx.lineTo(nodeB.x, nodeB.y)
+        ctx.stroke()
+      }
+    }
+  }
+
+  nodes.forEach((node) => {
+    node.x += node.vx
+    node.y += node.vy
+
+    if (node.x < 0 || node.x > canvas.width) node.vx *= -1
+    if (node.y < 0 || node.y > canvas.height) node.vy *= -1
+
+    ctx.fillStyle = '#b8ff57'
+    ctx.shadowColor = '#b8ff57'
+    ctx.shadowBlur = 8
+    ctx.beginPath()
+    ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.shadowBlur = 0
+  })
+
+  animationFrameId = requestAnimationFrame(draw)
+}
 
 const currentCert = computed<Certificate>(() => {
   return certificates[currentIndex.value] ?? certificates[0] ?? {
@@ -59,7 +144,6 @@ const setSlide = (index: number) => {
   currentIndex.value = index
 }
 
-// Modal controls
 const openModal = () => {
   isModalOpen.value = true
 }
@@ -68,7 +152,6 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 
-// Keyboard controls (Esc to close modal, Left/Right arrows for carousel)
 const handleKeydown = (event: KeyboardEvent) => {
   if (isModalOpen.value) {
     if (event.key === 'Escape') closeModal()
@@ -78,80 +161,98 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+const handleResize = () => {
+  initCanvas()
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
+  initCanvas()
+  window.addEventListener('resize', handleResize)
+  draw()
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('resize', handleResize)
+  cancelAnimationFrame(animationFrameId)
 })
 </script>
 
 <template>
   <section id="certificates" class="section certificates-section">
-    <p class="eyebrow"> Scan mo na yan pls!</p>
+    <!-- Moving Circuit Canvas Background -->
+    <canvas ref="canvasRef" class="bg-canvas" />
 
-    <h2> Scan this for feedback<span> </span></h2>
+    <!-- Ambient Glow Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
-    <div class="carousel-container">
-      <!-- Previous Button -->
-      <button class="nav-btn prev-btn" @click="prevSlide" aria-label="Previous certificate">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
+    <div class="content-container">
+      <p class="eyebrow">04 — CERTIFICATES</p>
 
-      <!-- Carousel Track -->
-      <div class="carousel-track">
-        <div
-            v-for="(cert, index) in certificates"
-            :key="cert.number || index"
-            class="carousel-slide"
-            :class="{
-            'active': index === currentIndex,
-            'prev': index === (currentIndex - 1 + certificates.length) % certificates.length,
-            'next': index === (currentIndex + 1) % certificates.length
-          }"
-        >
+      <h2>Certificates <span>& awards.</span></h2>
+
+      <div class="carousel-container">
+        <!-- Previous Button -->
+        <button class="nav-btn prev-btn" @click="prevSlide" aria-label="Previous certificate">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- Carousel Track -->
+        <div class="carousel-track">
           <div
-              class="certificate-card"
-              @click="index === currentIndex && openModal()"
-              :title="index === currentIndex ? 'Click to view full certificate' : ''"
+              v-for="(cert, index) in certificates"
+              :key="cert.number || index"
+              class="carousel-slide"
+              :class="{
+              'active': index === currentIndex,
+              'prev': index === (currentIndex - 1 + certificates.length) % certificates.length,
+              'next': index === (currentIndex + 1) % certificates.length
+            }"
           >
-            <img :src="cert.image" :alt="cert.title" class="certificate-image" />
-            <div class="view-overlay" v-if="index === currentIndex">
-              <span class="view-badge">🔍 Click to Expand</span>
+            <div
+                class="certificate-card"
+                @click="index === currentIndex && openModal()"
+                :title="index === currentIndex ? 'Click to view full certificate' : ''"
+            >
+              <img :src="cert.image" :alt="cert.title" class="certificate-image" />
+              <div class="view-overlay" v-if="index === currentIndex">
+                <span class="view-badge">🔍 Click to Expand</span>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Next Button -->
+        <button class="nav-btn next-btn" @click="nextSlide" aria-label="Next certificate">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       </div>
 
-      <!-- Next Button -->
-      <button class="nav-btn next-btn" @click="nextSlide" aria-label="Next certificate">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-    </div>
+      <!-- Caption Info -->
+      <div class="caption">
+        <span class="number">{{ currentCert.number }} — </span>
+        <span class="title">{{ currentCert.title }}</span>
+        <span v-if="currentCert.issuer" class="divider">•</span>
+        <span v-if="currentCert.issuer" class="issuer">{{ currentCert.issuer }}</span>
+      </div>
 
-    <!-- Caption Info -->
-    <div class="caption">
-      <span class="number">{{ currentCert.number }} — </span>
-      <span class="title">{{ currentCert.title }}</span>
-      <span v-if="currentCert.issuer" class="divider">•</span>
-      <span v-if="currentCert.issuer" class="issuer">{{ currentCert.issuer }}</span>
-    </div>
-
-    <!-- Pagination Dots -->
-    <div class="dots-container">
-      <button
-          v-for="(cert, index) in certificates"
-          :key="index"
-          class="dot"
-          :class="{ 'active': index === currentIndex }"
-          @click="setSlide(index)"
-          :aria-label="`Go to slide ${index + 1}`"
-      ></button>
+      <!-- Pagination Dots -->
+      <div class="dots-container">
+        <button
+            v-for="(cert, index) in certificates"
+            :key="index"
+            class="dot"
+            :class="{ 'active': index === currentIndex }"
+            @click="setSlide(index)"
+            :aria-label="`Go to slide ${index + 1}`"
+        ></button>
+      </div>
     </div>
 
     <!-- Fullscreen Lightbox Modal -->
@@ -174,19 +275,9 @@ onUnmounted(() => {
 
 <style scoped>
 .section {
+  position: relative;
   padding: 120px 10%;
-  background:
-      radial-gradient(
-          circle at 85% 30%,
-          rgba(56, 189, 248, 0.08) 0%,
-          transparent 50%
-      ),
-      radial-gradient(
-          circle at 15% 70%,
-          rgba(184, 255, 87, 0.06) 0%,
-          transparent 50%
-      ),
-      #0d0f14;
+  background: #0d0f14;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
@@ -194,6 +285,63 @@ onUnmounted(() => {
   align-items: center;
   text-align: center;
   overflow: hidden;
+}
+
+/* Canvas Background Layer */
+.bg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* Floating Glow Ambient Background Orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 1;
+  animation: floatOrb 12s infinite alternate ease-in-out;
+}
+
+.orb-1 {
+  width: 380px;
+  height: 380px;
+  top: 10%;
+  right: -5%;
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.orb-2 {
+  width: 420px;
+  height: 420px;
+  bottom: 10%;
+  left: -5%;
+  background: rgba(184, 255, 87, 0.08);
+  animation-delay: -6s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(50px, 60px) scale(1.15);
+  }
+}
+
+.content-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .eyebrow {
@@ -285,6 +433,7 @@ h2 span {
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 12px;

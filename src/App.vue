@@ -5,16 +5,31 @@ import CertificateSection from './components/Certificates.vue'
 import SkillsSection from './components/Skills.vue'
 import ProjectsSection from './components/ProjectCard.vue'
 import ContactSection from './components/Contact.vue'
+import FallingDebris from './components/Falling.vue'
+import Loader from './components/Loader.vue'
+import Terminal from './components/Terminal.vue'
+import Donate from "@/components/Donate.vue";
 </script>
 
 <template>
   <div class="app-container">
-    <HeroSection />
-    <AboutSection />
-    <ProjectsSection />
-    <SkillsSection />
-    <CertificateSection />
-    <ContactSection />
+    <Loader />
+    <FallingDebris />
+
+    <main class="content-wrapper">
+      <HeroSection />
+      <AboutSection />
+      <ProjectsSection />
+      <SkillsSection />
+      <CertificateSection />
+      <ContactSection />
+
+    </main>
+
+    <!-- Interactive Terminal Drawer -->
+    <Terminal />
+    <Donate/>
+
   </div>
 </template>
 
@@ -34,8 +49,15 @@ body {
 }
 
 .app-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  position: relative;
+  z-index: 2;
 }
 </style>

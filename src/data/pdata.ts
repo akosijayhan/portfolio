@@ -21,9 +21,9 @@ export const profile: StudentProfile = {
     facebook: 'https://www.facebook.com/akosijayhan',
     instagram: 'https://www.instagram.com/jayhahahan/',
     location: 'Tuguegarao City, Cagayan, Philippines',
-    avatarUrl: 'img_4.png',
-}
+    avatarUrl: 'coe.jpg',
 
+}
 
 export const projects: Project[] = [
     {
@@ -31,7 +31,7 @@ export const projects: Project[] = [
         title: 'PIC Development Kit Board',
         description:
             'All-in-one hardware platform designed to simplify prototyping and testing applications using Microchip PIC microcontrollers.',
-        tags: [],
+        tags: ['Hardware', 'PIC Microcontroller', 'Assembly', 'MPLAB X'],
         githubUrl: 'https://github.com/akosijayhan',
         featured: true,
     },
@@ -40,39 +40,38 @@ export const projects: Project[] = [
         title: 'Custom DC-DC / AC-DC Power Supply',
         description:
             'End-to-end development of a custom power supply from schematic capture and simulation to multilayer PCB layout and hardware validation, achieving 100% efficiency.',
-        tags: [],
+        tags: ['Hardware', 'PCB Design', 'AC-DC', 'Multisim'],
         githubUrl: 'https://github.com/akosijayhan',
         featured: true,
     },
     {
         id: 3,
-        title: 'Golden Harvest Subdivision Boarding House Finder',
-        description:
-            'A web-based rental management platform designed to help boarders find rental rooms while enabling landlords to post, manage, and monitor listings.',
-        tags: [],
-        githubUrl: 'https://github.com/akosijayhan',
-        featured: true,
-    },
-    {
-        id: 4,
         title: 'Eco-Charge',
         description:
             'An Arduino-based, sustainable charging system designed to detect and collect recyclable plastic bottles, providing mobile device charging in exchange for each accepted bottle while promoting proper waste disposal and environmental sustainability.',
-        tags: [],
+        tags: ['Embedded Systems', 'Arduino', 'Sensors', 'Microcontroller'],
         githubUrl: '',
         featured: false,
+    },
+    {
+        id: 4,
+        title: 'Golden Harvest Subdivision Boarding House Finder',
+        description:
+            'A web-based rental management platform designed to help boarders find rental rooms while enabling landlords to post, manage, and monitor listings.',
+        tags: ['Web Development', 'Vue 3', 'Django REST Framework', 'PostgreSQL'],
+        githubUrl: 'https://github.com/akosijayhan',
+        featured: true,
     },
     {
         id: 5,
         title: 'Museum Management System',
         description:
             'A relational database and web-based system designed to manage dinosaur exhibits, track specimen activities, log visitor interactions, and streamline museum operations.',
-        tags: [],
+        tags: ['Web Development', 'Vue 3', 'Django', 'REST API'],
         githubUrl: 'https://github.com/akosijayhan',
         featured: false,
     },
 ];
-
 
 export const experiences: Experience[] = [
     {
@@ -164,5 +163,22 @@ export const certificates: Certificate[] = [
         issuer: 'Cagayan State University',
         date: '2024',
         imageUrl: '/img.png',
+    },
+]
+const educationList = [
+    {
+        period: '2023 – Present',
+        school: 'Cagayan State University – Carig Campus',
+        degree: 'Bachelor of Science in Computer Engineering',
+    },
+    {
+        period: '2017 – 2023',
+        school: 'Cataggaman National High School',
+        degree: 'Senior High School — Humanities and Social Sciences (HUMSS)',
+    },
+    {
+        period: '2011 – 2017',
+        school: 'Cataggaman Elementary School',
+        degree: 'Elementary Education',
     },
 ]
