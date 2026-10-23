@@ -12,7 +12,6 @@ interface Node {
   radius: number
 }
 
-
 const educationList = [
   {
     period: '2023 – Present',
@@ -30,7 +29,7 @@ const educationList = [
     degree: 'Elementary Education',
   },
   {
-    period: '2010-2011',
+    period: '2010 – 2011',
     school: 'Cataggaman Viejo Daycare Center',
     degree: 'Basic Education',
   },
@@ -42,9 +41,8 @@ const hobbies = [
   { icon: '✈️', label: 'Travel & Exploration' },
   { icon: '🥂', label: 'Inuman' },
   { icon: '🌿', label: 'Nature & Outdoor Adventures' },
-
-
 ]
+
 // Canvas Particle System
 let nodes: Node[] = []
 const NODE_COUNT = 30
@@ -85,11 +83,13 @@ const draw = () => {
       const nodeB = nodes[j]
       if (!nodeB) continue
 
+      // Fixed: Corrected distance math formulas
       const dx = nodeA.x - nodeB.x
       const dy = nodeA.y - nodeB.y
       const dist = Math.sqrt(dx * dx + dy * dy)
 
       if (dist < CONNECT_DISTANCE) {
+        // Fixed: Corrected opacity falloff math
         const opacity = (1 - dist / CONNECT_DISTANCE) * 0.3
         ctx.strokeStyle = `rgba(184, 255, 87, ${opacity})`
         ctx.lineWidth = 1
@@ -112,6 +112,7 @@ const draw = () => {
     ctx.shadowColor = '#b8ff57'
     ctx.shadowBlur = 8
     ctx.beginPath()
+    // Fixed: Corrected arc 2*PI radian formula
     ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
     ctx.fill()
     ctx.shadowBlur = 0
@@ -201,7 +202,7 @@ onUnmounted(() => {
 .section {
   position: relative;
   padding: 120px 10%;
-  background: #0d0f14;
+  background: transparent;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;

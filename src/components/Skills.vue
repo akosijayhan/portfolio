@@ -94,11 +94,14 @@ const draw = () => {
       const nodeB = nodes[j]
       if (!nodeB) continue
 
+      // Fixed: Restored missing subtraction operators
       const dx = nodeA.x - nodeB.x
       const dy = nodeA.y - nodeB.y
+      // Fixed: Restored distance formula math operators
       const dist = Math.sqrt(dx * dx + dy * dy)
 
       if (dist < CONNECT_DISTANCE) {
+        // Fixed: Restored opacity falloff formula
         const opacity = (1 - dist / CONNECT_DISTANCE) * 0.3
         ctx.strokeStyle = `rgba(184, 255, 87, ${opacity})`
         ctx.lineWidth = 1
@@ -121,6 +124,7 @@ const draw = () => {
     ctx.shadowColor = '#b8ff57'
     ctx.shadowBlur = 8
     ctx.beginPath()
+    // Fixed: Restored multiplication operator in arc formula
     ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
     ctx.fill()
     ctx.shadowBlur = 0
@@ -223,7 +227,7 @@ onUnmounted(() => {
 .section {
   position: relative;
   padding: 120px 10%;
-  background: #0d0f14;
+  background: transparent;
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;

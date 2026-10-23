@@ -7,7 +7,7 @@ const socialLinks = [
   { label: 'Instagram', url: profile.instagram },
 ]
 
-// Updated sequence: About -> Certificates -> Projects (ProjectCard) -> Skills -> Contact
+// Updated navigation sequence matching portfolio section structure
 const navigation = [
   { label: 'About', id: 'about' },
   { label: 'Projects', id: 'projects' },
@@ -19,17 +19,17 @@ const navigation = [
 
 <template>
   <section id="home" class="hero">
-    <!-- Background portrait and overlay -->
+    <!-- Background portrait image and ambient gradient overlays -->
     <div
         class="hero-image"
         :style="{ backgroundImage: `url('${profile.avatarUrl}')` }"
     ></div>
     <div class="hero-overlay"></div>
 
-    <!-- Header -->
+    <!-- Header / Navbar -->
     <header class="hero-header">
-      <a href="#home" class="brand" aria-label="Back to home">
-        <span> </span>
+      <a href="#home" class="brand" aria-label="Back to top home section">
+        <span></span>
       </a>
 
       <div class="social-links">
@@ -45,7 +45,7 @@ const navigation = [
       </div>
     </header>
 
-    <!-- Main introduction -->
+    <!-- Main Hero Copy -->
     <main class="hero-content">
       <p class="eyebrow">
         {{ profile.degree }} STUDENT
@@ -72,7 +72,7 @@ const navigation = [
       </a>
     </main>
 
-    <!-- Side navigation matching your section sequence -->
+    <!-- Side Navigation Bar -->
     <nav class="side-navigation" aria-label="Main navigation">
       <a
           v-for="item in navigation"
@@ -83,10 +83,10 @@ const navigation = [
       </a>
     </nav>
 
-    <!-- Footer -->
+    <!-- Hero Footer Bar -->
     <div class="hero-footer">
       <span>PORTFOLIO — 2026</span>
-      <span></span>
+      <span>CAGAYAN STATE UNIVERSITY</span>
     </div>
   </section>
 </template>
@@ -100,7 +100,7 @@ const navigation = [
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  background: #0d0f14;
+  background: transparent;
   color: #fff;
   padding: 100px 7% 80px;
 }
@@ -152,14 +152,16 @@ const navigation = [
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  z-index: 10;
 }
 
 .brand {
   color: #fff;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 900;
   text-decoration: none;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .brand span {
@@ -177,8 +179,9 @@ const navigation = [
 .side-navigation a {
   color: #fff;
   text-decoration: none;
-  font-family: Georgia, serif;
-  font-size: 15px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
   transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
@@ -190,7 +193,7 @@ const navigation = [
 
 .hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   max-width: 750px;
   padding-bottom: 20px;
 }
@@ -201,6 +204,7 @@ const navigation = [
   letter-spacing: 3px;
   font-weight: 700;
   margin: 0 0 25px;
+  font-family: 'Courier New', Courier, monospace;
   text-shadow: 0 0 8px rgba(184, 255, 87, 0.3);
 }
 
@@ -236,8 +240,8 @@ const navigation = [
 .hero-description {
   max-width: 480px;
   color: #f1f1f1;
-  font-family: Georgia, serif;
-  font-size: 17px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
   line-height: 1.8;
   margin: 0 0 12px;
 }
@@ -248,6 +252,7 @@ const navigation = [
   letter-spacing: 1.5px;
   margin: 0 0 26px;
   font-weight: 600;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .explore-link {
@@ -257,6 +262,7 @@ const navigation = [
   color: #fff;
   text-decoration: none;
   font-size: 11px;
+  font-family: 'Courier New', Courier, monospace;
   letter-spacing: 2px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.4);
   padding-bottom: 12px;
@@ -291,7 +297,7 @@ const navigation = [
 }
 
 .side-navigation a {
-  font-size: 16px;
+  font-size: 15px;
   position: relative;
   transition: all 0.2s ease;
 }
@@ -325,7 +331,8 @@ const navigation = [
   justify-content: space-between;
   gap: 15px;
   color: #bdbdbd;
-  font-size: 9px;
+  font-size: 10px;
+  font-family: 'Courier New', Courier, monospace;
   letter-spacing: 2px;
 }
 
@@ -377,7 +384,7 @@ const navigation = [
   }
 
   .social-links a {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .hero-content {
