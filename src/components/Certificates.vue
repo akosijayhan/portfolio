@@ -12,7 +12,7 @@ const certificates: Certificate[] = [
   {
     number: '01',
     title: 'Regional ITE Summit',
-    issuer: 'Cagayan State University',
+    issuer: 'St. Paul University of the Philippines ',
     image: './Dayag.png',
   },
   {
